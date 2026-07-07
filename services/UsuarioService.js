@@ -1,37 +1,46 @@
-const UsuarioRepository = require('../repositories/UsuarioRepository');
-const bcrypt = require('bcrypt');
+const UsuarioRepository = require("../repositories/UsuarioRepository");
+const bcrypt = require("bcrypt");
 
 class UsuarioService {
+  async listar() {
+    return await UsuarioRepository.buscarTodos();
+  }
 
-    async listar() {
-        return await UsuarioRepository.buscarTodos();
+  async criar(dados) {
+    const existe = await UsuarioRepository.buscarPorEmail(dados.email);
+
+    if (existe) {
+      throw new Error("Usuário já existe");
     }
 
-    async criar(dados) {
+    const senhaHash = await bcrypt.hash(dados.senha, 10);
 
-        const existe = await UsuarioRepository.buscarPorEmail(
-            dados.email
-        );
+    const usuario = await UsuarioRepository.criar({
+      ...dados,
+      senha: senhaHash,
+    });
 
-        if (existe) {
-            throw new Error('Usuário já existe');
-        }
+    delete usuario.senha;
 
-        const senhaHash = await bcrypt.hash(
-            dados.senha,
-            10
-        );
+    return usuario;
+  }
 
-        const usuario = await UsuarioRepository.criar({
-            ...dados,
-            senha: senhaHash
-        });
+  async atualizarCargo(id, cargo) {
+    const usuario = await UsuarioRepository.buscarPorId(id);
 
-        delete usuario.senha;
-
-        return usuario;
+    if (!usuario) {
+      throw new Error("Usuário não encontrado.");
     }
 
+    const usuarioAtualizado = await UsuarioRepository.atualizarCargo(
+      id,
+      cargo,
+    );
+
+    delete usuarioAtualizado.senha;
+
+    return usuarioAtualizado;
+  }
 }
 
 module.exports = new UsuarioService();

@@ -1,9 +1,9 @@
 const TokenService = require('../services/TokenService');
 
-module.exports = async (req, res, next) => {
+const authMiddleware  = async (req, res, next) => {
 
     const authHeader = req.headers.authorization;
-
+   
     if (!authHeader) {
         return res.status(401).json({
             sucesso: false,
@@ -19,6 +19,9 @@ module.exports = async (req, res, next) => {
     }
 
     const [, token] = authHeader.split(' ');
+   
+    
+    
 
     try {
 
@@ -31,10 +34,14 @@ module.exports = async (req, res, next) => {
 
     } catch (error) {
 
-        return res.status(401).json({
-            sucesso: false,
-            mensagem: 'Token inválido'
-        });
+    console.error(error);
 
-    }
+    return res.status(401).json({
+        sucesso: false,
+        mensagem: error.message
+    });
+
+}
 };
+
+module.exports = authMiddleware;

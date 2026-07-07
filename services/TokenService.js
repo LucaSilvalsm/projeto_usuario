@@ -1,26 +1,22 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+JWT_SECRET = process.env.JWT_SECRET;
 
 class TokenService {
+  gerar(payload) {
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+  }
 
-    gerar(payload) {
+  verificar(token) {
+   
 
-        return jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            {
-                expiresIn: process.env.JWT_EXPIRES_IN
-            }
-        );
-    }
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
 
-    verificar(token) {
+    console.log("Payload:", payload);
 
-        return jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
-    }
-
+    return payload;
+  }
 }
 
 module.exports = new TokenService();

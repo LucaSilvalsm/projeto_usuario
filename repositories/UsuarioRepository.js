@@ -39,6 +39,15 @@ class UsuarioRepository {
   async deletar(id) {
     return await knex("usuarios").where({ id }).delete();
   }
+
+  async atualizarCargo(id, cargo) {
+    const [usuarioAtualizado] = await knex("usuarios")
+      .where({ id })
+      .update({ cargo })
+      .returning("*");
+
+    return usuarioAtualizado;
+  }
 }
 
 module.exports = new UsuarioRepository();

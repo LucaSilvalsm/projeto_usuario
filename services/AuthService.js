@@ -27,6 +27,7 @@ class AuthService {
             email: usuario.email,
             cargo: usuario.cargo
         });
+        console.log("TOKEN GERADO:", token);
 
         const { senha: _, ...usuarioSemSenha } = usuario;
 
