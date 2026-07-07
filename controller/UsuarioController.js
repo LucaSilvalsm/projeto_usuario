@@ -1,11 +1,7 @@
 const UsuarioService = require("../services/UsuarioService");
 
 class UsuarioController {
-  async index(req, res) {
-
-
-
-  }
+  async index(req, res) {}
 
   async create(req, res) {
     try {
@@ -49,34 +45,32 @@ class UsuarioController {
   }
 
   async atualizarCargo(req, res) {
-
-    try {
-
-        const { id } = req.params;
-        const { cargo } = req.body;
-
-        const usuario =
-            await UsuarioService.atualizarCargo(
-                id,
-                cargo
-            );
-
-        return res.status(200).json({
-            sucesso: true,
-            mensagem: "Cargo atualizado com sucesso.",
-            dados: usuario
-        });
-
-    } catch (error) {
-
-        return res.status(400).json({
-            sucesso: false,
-            mensagem: error.message
-        });
-
+    
+    if(req.body.cargo !== "Admin" && req.body.cargo !== "Cliente") {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: "Cargo inválido. Use 'Admin' ou 'Cliente'.",
+      });
     }
 
-}
+    try {
+      const usuario = await UsuarioService.atualizarCargo(
+        req.params.id,
+        req.body.cargo
+      );
+
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: "Cargo atualizado com sucesso.",
+        dados: usuario,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        sucesso: false,
+        mensagem: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new UsuarioController();

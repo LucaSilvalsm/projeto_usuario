@@ -10,7 +10,7 @@ routes.get('/', HomeController.index);
 
 routes.get('/users', authMiddleware,cargoMiddleware, UsuarioController.listarUsuarios);
 routes.post('/users', UsuarioController.create);
-routes.patch('/users/:id', authMiddleware,  UsuarioController.atualizarCargo);
+routes.patch('/users/:id', authMiddleware,cargoMiddleware,  UsuarioController.atualizarCargo);
 
 
 // Auth routes(Autenticação das rotas de login e logout)
