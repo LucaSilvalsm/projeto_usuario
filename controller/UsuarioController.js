@@ -71,6 +71,22 @@ class UsuarioController {
       });
     }
   }
+  async buscarPorId(req, res) {
+    try {
+      const usuario = await UsuarioService.buscarPorId(req.params.id);
+
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: "Usuário encontrado com sucesso.",
+        dados: usuario,
+      });
+    } catch (error) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new UsuarioController();

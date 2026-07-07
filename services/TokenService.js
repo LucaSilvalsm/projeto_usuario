@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
-JWT_SECRET = process.env.JWT_SECRET;
+
+
 
 class TokenService {
   gerar(payload) {

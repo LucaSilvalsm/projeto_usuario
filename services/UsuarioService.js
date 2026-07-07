@@ -24,7 +24,15 @@ class UsuarioService {
 
     return usuario;
   }
-
+  async buscarPorId(id) {
+    const usuario = await UsuarioRepository.buscarPorId(id);
+    
+    if (!usuario) {
+      throw new Error("Usuário não encontrado.");
+    }
+     const { senha: _, ...usuarioSemSenha } = usuario;
+    return usuarioSemSenha;
+  }
   async atualizarCargo(id, cargo) {
     const usuario = await UsuarioRepository.buscarPorId(id);
 
