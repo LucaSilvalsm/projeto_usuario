@@ -95,6 +95,9 @@ O sistema deve permitir:
 
 ## Falta desenvolver
 
+## Pendente antes de deploy em produção
+- Configurar `app.set('trust proxy', ...)` de acordo com o ambiente de hospedagem escolhido
+
 ### Controle de acesso por tipo de usuario
 
 Criar um middleware de autorizacao para verificar o cargo do usuario autenticado.

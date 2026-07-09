@@ -5,6 +5,9 @@ const HomeController = require('../controller/HomeController');
 const UsuarioController = require('../controller/UsuarioController');
 const AuthController = require('../controller/AuthController');
 const cargoMiddleware = require('../middleware/CargoMiddleware');
+const { loginLimiter , apiLimiter }  = require('../middleware/Ratelimite.js');
+
+routes.use(apiLimiter);
 
 routes.get('/', HomeController.index);
 
@@ -13,9 +16,12 @@ routes.post('/users', UsuarioController.create);
 routes.patch('/users/:id', authMiddleware,cargoMiddleware,  UsuarioController.atualizarCargo);
 routes.get('/users/:id', authMiddleware,cargoMiddleware, UsuarioController.buscarPorId);
 
+// edição/exclusão de usuarios
+routes.delete('/users/:id', authMiddleware,cargoMiddleware, UsuarioController.deletar);
+
 
 // Auth routes(Autenticação das rotas de login e logout)
-routes.post('/auth/login', AuthController.login);
+routes.post('/auth/login', loginLimiter, AuthController.login);
 
 
 

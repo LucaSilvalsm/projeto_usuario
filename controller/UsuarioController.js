@@ -87,6 +87,21 @@ class UsuarioController {
       });
     }
   }
+  async deletar(req,res){
+    try{
+      const resultado = await UsuarioService.deletar(req.params.id);
+
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: resultado.mensagem,
+      });
+    } catch (error) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: error.message,
+      });
+    }
+  }
 }
 
 module.exports = new UsuarioController();
