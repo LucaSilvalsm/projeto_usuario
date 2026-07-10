@@ -1,28 +1,30 @@
-const express = require('express');
+const express = require("express");
 const routes = express.Router();
-const authMiddleware = require('../middleware/AuthMiddleware');
-const HomeController = require('../controller/HomeController');
-const UsuarioController = require('../controller/UsuarioController');
-const AuthController = require('../controller/AuthController');
-const cargoMiddleware = require('../middleware/CargoMiddleware');
-const { loginLimiter , apiLimiter }  = require('../middleware/Ratelimite.js');
 
+const authMiddleware = require("../middleware/AuthMiddleware");
+const cargoMiddleware = require("../middleware/CargoMiddleware");
+const validarId = require("../middleware/ValidarId.js");
+const { loginLimiter, apiLimiter } = require("../middleware/Ratelimite.js");
+
+const HomeController = require("../controller/HomeController");
+const UsuarioController = require("../controller/UsuarioController");
+const AuthController = require("../controller/AuthController");
+
+// Middleware global para todas as rotas
 routes.use(apiLimiter);
 
-routes.get('/', HomeController.index);
+// Rotas principais
+routes.get("/", HomeController.index);
 
-routes.get('/users', authMiddleware,cargoMiddleware, UsuarioController.listarUsuarios);
-routes.post('/users', UsuarioController.create);
-routes.patch('/users/:id', authMiddleware,cargoMiddleware,  UsuarioController.atualizarCargo);
-routes.get('/users/:id', authMiddleware,cargoMiddleware, UsuarioController.buscarPorId);
+// Rotas de usuários Rotas de autenticação
+routes.get( "/users",authMiddleware,cargoMiddleware,UsuarioController.listarUsuarios);
+routes.post("/users", UsuarioController.create);
+routes.get(  "/users/:id", authMiddleware,cargoMiddleware,validarId,UsuarioController.buscarPorId);
+routes.patch("/users/:id",authMiddleware,cargoMiddleware,validarId,UsuarioController.atualizarCargo);
+routes.delete("/users/:id",authMiddleware,cargoMiddleware,validarId,UsuarioController.deletar);
 
-// edição/exclusão de usuarios
-routes.delete('/users/:id', authMiddleware,cargoMiddleware, UsuarioController.deletar);
-
-
-// Auth routes(Autenticação das rotas de login e logout)
-routes.post('/auth/login', loginLimiter, AuthController.login);
-
-
+// Rotas de autenticação
+// Auth routes (Autenticação das rotas de login e logout)
+routes.post("/auth/login", loginLimiter, AuthController.login);
 
 module.exports = routes;
