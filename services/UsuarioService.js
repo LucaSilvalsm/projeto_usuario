@@ -59,6 +59,16 @@ class UsuarioService {
 
     return { mensagem: "Usuário deletado com sucesso." };
   }
+  async buscarPorEmail(email) {
+    const usuario = await UsuarioRepository.buscarPorEmail(email);
+
+    if (!usuario) {
+      throw new Error("Usuário não encontrado.");
+    }
+
+    const { senha: _, ...usuarioSemSenha } = usuario;
+    return usuarioSemSenha;
+  }
 }
 
 module.exports = new UsuarioService();
