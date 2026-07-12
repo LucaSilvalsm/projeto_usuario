@@ -2,54 +2,42 @@ const TokenSenhaRepository = require("../repositories/TokenSenhaRepository");
 const UsuarioService = require("../services/UsuarioService");
 const crypto = require("crypto");
 const EmailService = require("../services/EmailService");
+const UsuarioRepository = require("../repositories/UsuarioRepository");
 
 class RecuperacaoSenhaService {
   async criar(email) {
-    const usuario = await UsuarioService.buscarPorEmail(email);
+    const usuario = await UsuarioRepository.buscarPorEmail(email); // repository só retorna undefined, nunca lança erro
 
-    if (!usuario) {
-      throw new Error("Usuário não encontrado.");
+    if (usuario) {
+      await TokenSenhaRepository.removerTokensAtivos(usuario.id);
+
+      const token = crypto.randomBytes(32).toString("hex");
+      const expiraEm = new Date(Date.now() + 15 * 60 * 1000);
+
+      await TokenSenhaRepository.criar({
+        usuario_id: usuario.id,
+        token,
+        usado: false,
+        expira_em: expiraEm,
+      });
+
+      // RecuperacaoSenhaService.js
+      const link = `${process.env.APP_URL}/auth/redefinir-senha/${token}`;
+
+      await EmailService.enviar(
+        usuario.email,
+        "Recuperação de senha",
+        `
+          <h2>Recuperação de senha</h2>
+          <p>Olá, ${usuario.nome}.</p>
+          <p>Clique no botão abaixo para redefinir sua senha.</p>
+          <a href="${link}" style="background:#2563eb;color:white;padding:12px 20px;text-decoration:none;border-radius:5px;">
+            Redefinir senha
+          </a>
+          <p>Este link expira em 15 minutos.</p>
+        `,
+      );
     }
-
-    await TokenSenhaRepository.marcarComoUsado(usuario.id);
-
-    const token = require("crypto").randomBytes(32).toString("hex");
-
-    const expiraEm = new Date(Date.now() + 15 * 60 * 1000);
-
-    await TokenSenhaRepository.criar({
-      usuario_id: usuario.id,
-      token,
-      usado: false,
-      expira_em: expiraEm,
-    });
-
-    const link = `http://localhost:5000/auth/redefinir-senha/${token}`;
-
-    await EmailService.enviar(
-      usuario.email,
-      "Recuperação de senha",
-      `
-                <h2>Recuperação de senha</h2>
-
-                <p>Olá, ${usuario.nome}.</p>
-
-                <p>Clique no botão abaixo para redefinir sua senha.</p>
-
-                <a href="${link}"
-                   style="
-                        background:#2563eb;
-                        color:white;
-                        padding:12px 20px;
-                        text-decoration:none;
-                        border-radius:5px;
-                   ">
-                   Redefinir senha
-                </a>
-
-                <p>Este link expira em 15 minutos.</p>
-            `,
-    );
 
     return;
   }
@@ -90,7 +78,7 @@ class RecuperacaoSenhaService {
     }
 
     // 4 - verificar expiração
-    if (new Date() > tokenBanco.expira_em) {
+    if (new Date() > new Date(tokenBanco.expira_em)) {
       throw new Error("Token expirado.");
     }
 
@@ -100,9 +88,8 @@ class RecuperacaoSenhaService {
     // 6 - marcar token como usado
     await TokenSenhaRepository.marcarComoUsado(tokenBanco.id);
 
-    return {
-      mensagem: "Senha redefinida com sucesso.",
-    };
+    return { mensagem: "Senha redefinida com sucesso." };
   }
 }
+
 module.exports = new RecuperacaoSenhaService();
