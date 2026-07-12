@@ -48,6 +48,14 @@ class UsuarioRepository {
 
     return usuarioAtualizado;
   }
+  async atualizarSenha(id, senha) {
+    const [usuarioAtualizado] = await knex("usuarios")
+      .where({ id })
+      .update({ senha })
+      .returning(["id", "nome", "sobrenome", "email", "cargo", "updated_at"]);
+
+    return usuarioAtualizado;
+  }
 }
 
 module.exports = new UsuarioRepository();

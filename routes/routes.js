@@ -28,9 +28,11 @@ routes.delete("/users/:id",authMiddleware,cargoMiddleware,validarId,UsuarioContr
 // Rotas de autenticação
 // Auth routes (Autenticação das rotas de login e logout)
 routes.post("/auth/login", loginLimiter, AuthController.login);
+routes.get("/auth/redefinir-senha/:token", RecuperaSenhaController.validarToken);
+routes.patch("/auth/redefinir-senha/:token", RecuperaSenhaController.redefinir);
 
 
 // Rotas de recuperação de senha
-routes.post("/recuperacao-senha", emailMiddleware, RecuperaSenhaController.criar);
+routes.post("/auth/esqueci-senha", emailMiddleware, RecuperaSenhaController.criar);
 
 module.exports = routes;

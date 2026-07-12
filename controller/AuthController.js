@@ -1,4 +1,7 @@
 const AuthService = require("../services/AuthService");
+const UsuarioService = require("../services/UsuarioService");
+const TokenSenhaRepository = require("../repositories/TokenSenhaRepository")
+const bcrypt = require("bcrypt");
 
 class AuthController {
   async login(req, res) {
@@ -30,5 +33,6 @@ class AuthController {
       });
     }
   }
+  
 }
 module.exports = new AuthController();

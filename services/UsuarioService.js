@@ -69,6 +69,30 @@ class UsuarioService {
     const { senha: _, ...usuarioSemSenha } = usuario;
     return usuarioSemSenha;
   }
+  async atualizarSenha(id, novaSenha) {
+    const usuario = await UsuarioRepository.buscarPorId(id);
+
+    if (!usuario) {
+      throw new Error("Usuário não encontrado.");
+    }
+
+    const senhaIgual = await bcrypt.compare(novaSenha, usuario.senha);
+
+    if (senhaIgual) {
+      throw new Error("A nova senha não pode ser igual às senhas anteriores.");
+    }
+
+    const senhaHash = await bcrypt.hash(novaSenha, 10);
+
+    const usuarioAtualizado = await UsuarioRepository.atualizarSenha(
+      id,
+      senhaHash,
+    );
+
+    delete usuarioAtualizado.senha;
+
+    return usuarioAtualizado;
+  }
 }
 
 module.exports = new UsuarioService();
