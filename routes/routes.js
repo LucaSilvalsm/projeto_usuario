@@ -28,6 +28,7 @@ routes.delete("/users/:id",authMiddleware,cargoMiddleware,validarId,UsuarioContr
 // Rotas de autenticação
 // Auth routes (Autenticação das rotas de login e logout)
 routes.post("/auth/login", loginLimiter, AuthController.login);
+routes.post("/auth/logout", authMiddleware, AuthController.logout);
 routes.get("/auth/redefinir-senha/:token", RecuperaSenhaController.validarToken);
 routes.patch("/auth/redefinir-senha/:token", RecuperaSenhaController.redefinir);
 

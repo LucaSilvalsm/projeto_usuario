@@ -33,6 +33,19 @@ class AuthController {
       });
     }
   }
+  async logout(req, res) {
+    try {
+        return res.status(200).json({
+            sucesso: true,
+            mensagem: "Logout realizado com sucesso."
+        });
+    } catch (error) {
+        return res.status(500).json({
+            sucesso: false,
+            mensagem: error.message
+        });
+    }
+}
   
 }
 module.exports = new AuthController();
