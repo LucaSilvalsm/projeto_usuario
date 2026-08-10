@@ -12,7 +12,10 @@ class UsuarioRepository {
   }
 
   async buscarPorId(id) {
-    return await knex("usuarios").where({ id }).first();
+    return await knex("usuarios")
+      .select("id", "nome", "sobrenome", "email", "cargo")
+      .where({ id })
+      .first();
   }
 
   async buscarPorEmail(email) {

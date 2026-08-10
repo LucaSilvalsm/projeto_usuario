@@ -3,57 +3,54 @@ const AuthService = require("../services/AuthService");
 
 class GoogleAuthController {
 
-    async login(req, res) {
-        try {
-            const url = GoogleAuthService.gerarUrl();
+  async login(req, res) {
+    try {
+      const url = GoogleAuthService.gerarUrl();
 
-            return res.redirect(url);
+      return res.redirect(url);
 
-        } catch (error) {
-            return res.status(500).json({
-                sucesso: false,
-                mensagem: error.message
-            });
-        }
+    } catch (error) {
+
+      return res.status(500).json({
+        sucesso: false,
+        mensagem: error.message
+      });
+
     }
+  }
 
-    async callback(req, res) {
-        try {
+  async callback(req, res) {
+    try {
 
-            const { code } = req.query;
+      const { code } = req.query;
 
-            if (!code) {
-                return res.status(400).json({
-                    sucesso: false,
-                    mensagem: "Código de autorização não informado."
-                });
-            }
+      if (!code) {
+        return res.redirect(
+          `${process.env.APP_URL}/login?erro=google_code`
+        );
+      }
 
-            // Pega os dados do Google
-            const dadosGoogle =
-                await GoogleAuthService.obterDadosUsuario(code);
+      const dadosGoogle =
+        await GoogleAuthService.obterDadosUsuario(code);
 
-            // Cria/encontra usuário e gera JWT
-            const resultado =
-                await AuthService.loginGoogle(dadosGoogle);
+      const resultado =
+        await AuthService.loginGoogle(dadosGoogle);
 
-            // Pega somente o token
-            const { token } = resultado;
+      const { usuario, token } = resultado;
 
-            // Redireciona para o Vue
-            return res.redirect(
-                `${process.env.APP_URL}/auth/google/callback?token=${token}`
-            );
+      return res.redirect(
+        `${process.env.APP_URL}/google/callback?token=${encodeURIComponent(token)}`
+      );
 
-        } catch (error) {
+    } catch (error) {
 
-            console.error(error);
+      console.error("Erro no callback Google:", error);
 
-            return res.redirect(
-                `${process.env.APP_URL}/login?erro=google`
-            );
-        }
+      return res.redirect(
+        `${process.env.APP_URL}/login?erro=google`
+      );
     }
+  }
 }
 
 module.exports = new GoogleAuthController();

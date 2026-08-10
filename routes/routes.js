@@ -9,10 +9,9 @@ const { loginLimiter, apiLimiter } = require("../middleware/Ratelimite.js");
 const HomeController = require("../controller/HomeController");
 const UsuarioController = require("../controller/UsuarioController");
 const AuthController = require("../controller/AuthController");
-const RecuperaSenhaController = require("../controller/RecuperaSenhaController");
+const RecuperaSenhaController = require("../controller/RecuperaSenhaController")
 const emailMiddleware = require("../middleware/emailMiddleware");
 const GoogleAuthController = require("../controller/GoogleAuthController");
-
 
 // Middleware global para todas as rotas
 routes.use(apiLimiter);
@@ -61,14 +60,16 @@ routes.get(
 routes.patch("/auth/redefinir-senha/:token", RecuperaSenhaController.redefinir);
 
 // Rotas de recuperação de senha
-routes.post(
-  "/auth/esqueci-senha",
-  emailMiddleware,
-  RecuperaSenhaController.criar,
-);
+routes.post("/auth/esqueci-senha", emailMiddleware,RecuperaSenhaController.criar);
 
 // Rotas de Login com o Google
 routes.get("/auth/google", GoogleAuthController.login);
+
+routes.get(
+  "/auth/me",
+  authMiddleware,
+  AuthController.me
+);
 
 routes.get("/auth/google/callback", GoogleAuthController.callback);
 module.exports = routes;

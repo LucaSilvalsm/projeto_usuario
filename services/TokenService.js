@@ -14,7 +14,7 @@ class TokenService {
 
     const payload = jwt.verify(token, process.env.JWT_SECRET);
 
-    console.log("Payload:", payload);
+    
 
     return payload;
   }

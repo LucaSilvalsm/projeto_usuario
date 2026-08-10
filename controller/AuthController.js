@@ -1,6 +1,6 @@
 const AuthService = require("../services/AuthService");
 const UsuarioService = require("../services/UsuarioService");
-const TokenSenhaRepository = require("../repositories/TokenSenhaRepository")
+const TokenSenhaRepository = require("../repositories/TokenSenhaRepository");
 const bcrypt = require("bcrypt");
 
 class AuthController {
@@ -35,17 +35,32 @@ class AuthController {
   }
   async logout(req, res) {
     try {
-        return res.status(200).json({
-            sucesso: true,
-            mensagem: "Logout realizado com sucesso."
-        });
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: "Logout realizado com sucesso.",
+      });
     } catch (error) {
-        return res.status(500).json({
-            sucesso: false,
-            mensagem: error.message
-        });
+      return res.status(500).json({
+        sucesso: false,
+        mensagem: error.message,
+      });
     }
-}
-  
+  }
+  async me(req, res) {
+    try {
+      const usuario = await UsuarioService.buscarPorId(req.usuario.id);
+
+      return res.status(200).json({
+        sucesso: true,
+        mensagem: "Usuário autenticado.",
+        dados: usuario,
+      });
+    } catch (error) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: error.message,
+      });
+    }
+  }
 }
 module.exports = new AuthController();
